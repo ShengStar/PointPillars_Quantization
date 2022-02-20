@@ -1,5 +1,6 @@
 from train import bulid_net
 import torch
+import torch.quantization
 from predict import predict
 import numpy as np
 import time
@@ -37,25 +38,7 @@ def empty_result_anno():
 if __name__ == '__main__':
     dt_annos=[]
     for n in range (1) :
-        # i = str(n)
-        # s = i.zfill(6)
-        # box_preds = "/home8T/detection_head/result/" + s
-        # cls_preds = "/home8T/detection_head/result/" + s
-        # dir_cls_preds = "/home8T/detection_head/result/" + s
-        # # box_preds = box_preds + "/"
-        # # cls_preds = cls_preds + "/"
-        # # dir_cls_preds = dir_cls_preds + "/"
-        # box_preds = box_preds + "_box_preds.npy"
-        # cls_preds = cls_preds + "_cls_preds.npy"
-        # dir_cls_preds = dir_cls_preds + "_dir_cls_preds.npy"
-        
-        box_preds = torch.tensor(np.load("/home8T/detection_head/result/000001_box_preds.npy"))
-        cls_preds = torch.tensor(np.load("/home8T/detection_head/result/000001_cls_preds.npy"))
-        dir_cls_preds = torch.tensor(np.load("/home8T/detection_head/result/000001_dir_cls_preds.npy"))
         batch_anchor = torch.tensor(np.load("/home/star/rewrite_point_pillar_no_cuda/batch_anchors.npy"))
-        print(box_preds.shape)
-        print(cls_preds.shape)
-        print(dir_cls_preds.shape)
         net = bulid_net()
         net.load_state_dict(torch.load("/home/star/pointpillars_res_1_save/second/data/model_202112201024/voxelnet-352640.tckpt"))
         net.eval()
@@ -68,9 +51,6 @@ if __name__ == '__main__':
         print(cls_preds.shape)
         print(dir_cls_preds.shape)
         image_idex = 1
-        # box_preds = torch.tensor(np.load("/home/star/rewrite_point_pillar_no_cuda/batch_box_preds.npy"))
-        # cls_preds = torch.tensor(np.load("/home/star/rewrite_point_pillar_no_cuda/batch_cls_preds.npy"))
-        # dir_cls_preds = torch.tensor(np.load("/home/star/rewrite_point_pillar_no_cuda/batch_dir_preds.npy"))
         preds_dict = predict(batch_anchor,box_preds,cls_preds,dir_cls_preds,image_idex)
         box_preds_lidar = preds_dict["box3d_lidar"].detach().cpu().numpy()
         label_preds = preds_dict["label_preds"].detach().cpu().numpy()
